@@ -43,9 +43,7 @@ class SuffixTree:
                     # new node for the part in common
                     n2 = len(self.nodes)
                     self.nodes.append(Node(sub2[:j], [n3]))
-                    self.nodes[n3].sub = sub2[
-                        j:
-                    ]  # old node loses the part in common
+                    self.nodes[n3].sub = sub2[j:]  # old node loses the part in common
                     self.nodes[n].ch[x2] = n2
                     break  # continue down the tree
                 j = j + 1
