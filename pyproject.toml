@@ -1,21 +1,24 @@
-[tool.poetry]
+[project]
 name = "suffix_trees"
 version = "0.1.0"
 description = ""
-authors = ["Petro Mozil <mozil.petryk@gmail.com>"]
-license = "GPL v3.0"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-
-[tool.poetry.dev-dependencies]
-pylint = "^2.17.4"
-black = "^23.3.0"
-flake8 = "^6.0.0"
+authors = [
+    {name = "Petro Mozil", email = "mozil.petryk@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "GPL v3.0"}
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "flake8>=6.0.0",
+    "black>=23.3.0",
+]
 
 [tool.black]
 line-length = 88
