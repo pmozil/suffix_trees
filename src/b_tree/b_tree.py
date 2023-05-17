@@ -4,10 +4,47 @@ The B-tree wil serve as the basis for both the prefix and suffix trees
 """
 from __future__ import annotations
 
-from typing import Generic, Self, TypeVar
+from typing import Generic, TypeVar
 
-NodeValue = TypeVar("NodeValue")
+from typing_extensions import Protocol
+
 Tree = TypeVar("Tree", bound="BTree")
+
+
+class NodeValueProtocol(Protocol):
+    """
+    Protocol for eq
+    """
+
+    def __eq__(self, other: "NodeValueProtocol") -> bool:
+        return False
+
+
+NodeValue = TypeVar("NodeValue", bound="NodeValueProtocol")
+
+
+class IterableWithLen(Generic[NodeValue], Protocol):
+    """
+    Iterable with len protocol
+    """
+
+    def __iter__(self):
+        """
+        Iter method
+        """
+        ...
+
+    def __len__(self) -> int:
+        """
+        Len method for the  protocol
+        """
+        return 0
+
+    def __getitem__(self, key):
+        """
+        Getitem for the protocol
+        """
+        ...
 
 
 class BTreeNode(Generic[NodeValue]):
@@ -23,15 +60,15 @@ class BTreeNode(Generic[NodeValue]):
         leaves() -> int - get number of leaves the tree has
     """
 
-    def __init__(self, root: NodeValue | None = None):
+    def __init__(self, val: NodeValue | None = None):
         """
         Init for BTreeNode
 
         Args:
             root: NodeVal | None - the value of root node. could be None
         """
-        self.__val: NodeValue | None = root
-        self.__children: list[Self] = []
+        self.__val: NodeValue | None = val
+        self.__children = []
         self.is_leaf: bool = True
 
     @property
@@ -57,7 +94,7 @@ class BTreeNode(Generic[NodeValue]):
         """
         self.__children.append(type(self)(value))
 
-    def add_child(self, child: Self):
+    def add_child(self, child):
         """
         Add child to current node
 
@@ -72,11 +109,11 @@ class BTreeNode(Generic[NodeValue]):
             self.is_leaf = False
 
     @property
-    def children(self) -> list[Self]:
+    def children(self) -> list:
         """
         Get the children of the node
         """
-        return self.children
+        return self.__children
 
     @property
     def leaves(self) -> int:
@@ -86,7 +123,7 @@ class BTreeNode(Generic[NodeValue]):
         Returns:
         """
         children: int = 0
-        stack: list["Self"] = self.__children
+        stack: list = self.__children
 
         while stack:
             node = stack.pop(0)
@@ -95,6 +132,15 @@ class BTreeNode(Generic[NodeValue]):
             stack.extend(node.children)
 
         return children
+
+    def __getitem__(self, key: "NodeValue"):
+        """
+        Getitem for BTreeNode
+        """
+        for item in self.children:
+            if item.val == key:
+                return item
+        return None
 
     def __eq__(self, other) -> bool:
         """
