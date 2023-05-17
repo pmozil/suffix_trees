@@ -56,6 +56,21 @@ class BasicSuffixTree:
                 idx += 1
         return root
 
+    def indices(self, string: IterableWithLen[NodeValue]) -> list[int]:
+        """
+        Get indices for iterable
+        """
+        cur = self.root
+        idx = 0
+        while idx < len(string):
+            val = cur[string[idx]]
+            if val is None:
+                return []
+            else:
+                cur = val
+            idx += 1
+        return [idx - len(string) + 1 for idx in cur.indices]
+
     @staticmethod
     def suffixes(iterable: IterableWithLen[NodeValue]) -> list:
         """
