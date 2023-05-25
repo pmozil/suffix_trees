@@ -1,7 +1,7 @@
 """
 Prefix Tree
 """
-
+from random import choice
 class PrefixTree:
     """
     Prefix Tree
@@ -63,6 +63,51 @@ class PrefixTree:
 
         return recurse(self._head, 0)
 
+    def read_file(self, path):
+        """
+        Read file and return list of words
+        """
+        self.words_lst = []
+        with open(path, "r", encoding="utf-8") as file:
+            lines = file.readlines()
+            for line in lines:
+                word = line.split(" ")[0].strip()
+                if word != "":
+                    self.words_lst.append(word)
+        return self.words_lst
+
+    def create_tree(self, words: list):
+        """
+        Create a tree from a list of words
+        """
+        for word in words:
+            self.add_word(word)
+
+    def autocomplete(self, prefix: str):
+        """
+        Return a word with the prefix
+        """
+        current_node = self._head
+        for letter in prefix:
+            for let in current_node.letters:
+                if let.value == letter:
+                    current_node = let.child
+                    break
+            else:
+                return None
+        letter = choice(current_node.letters)
+        if letter.is_end is True:
+            res = letter.value
+        else:
+            res = ""
+        while letter.is_end is False and letter.child is not None:
+            letter = choice(current_node.letters)
+            res += letter.value
+            current_node = letter.child
+        if res == '':
+            return None
+        return prefix + res
+
 class Node:
     """
     Node for prefix tree
@@ -71,10 +116,7 @@ class Node:
         self.letters = letters # a list of Letter
 
     def __str__(self):
-        res = ''
-        for let in self.letters:
-            res += '|' + str(let)
-        return res
+        return str(self.letters)
 
 class Letter:
     """
@@ -85,13 +127,19 @@ class Letter:
         self.child = child # Node(letters=[])
         self.is_end = is_end # if the letter can be the end of a word
 
-    def __str__(self):
+    def __repr__(self):
         return str(self.value)
 
-tree = PrefixTree()
-tree.add_word('cat')
-tree.add_word('car')
-tree.add_word("dog")
-tree.add_word('drug')
-tree.add_word('carrot')
-print(tree)
+if __name__ == "__main__":
+    tree = PrefixTree()
+    tree.create_tree(tree.read_file("base.lst"))
+    print(tree.autocomplete("закли"))
+    print(tree.autocomplete("закли"))
+    print(tree.autocomplete("закли"))
+    print(tree.autocomplete("закли"))
+    print(tree.autocomplete("закли"))
+    print(tree.autocomplete("закли"))
+    print(tree.autocomplete("заклин"))
+    print(tree.autocomplete("заклин"))
+    print(tree.autocomplete("заклин"))
+    print(tree.autocomplete("заклин"))
