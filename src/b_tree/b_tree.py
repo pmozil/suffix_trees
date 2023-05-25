@@ -23,7 +23,7 @@ class NodeValueProtocol(Protocol):
 NodeValue = TypeVar("NodeValue", bound="NodeValueProtocol")
 
 
-class IterableWithLen(Generic[NodeValue], Protocol):
+class IterableWithLen(Protocol):
     """
     Iterable with len protocol
     """

@@ -12,7 +12,7 @@ class SufTreeNode(BTreeNode):
     Suffix tree node
     """
 
-    def __init__(self, val: NodeValue | None = None, idx: int = -1):
+    def __init__(self, val: str | None = None, idx: int = -1):
         """
         Init for suffix tree node
         """
@@ -25,7 +25,7 @@ class BasicSuffixTree:
     The suffix tree class.
     """
 
-    def __init__(self, text: IterableWithLen[NodeValue] | None = None):
+    def __init__(self, text: IterableWithLen | None = None):
         """
         Init for the basic suffix tree
         """
@@ -33,9 +33,7 @@ class BasicSuffixTree:
         if text is not None:
             self.root = self.build_from_iterable(text)
 
-    def build_from_iterable(
-        self, iterable: IterableWithLen[NodeValue]
-    ) -> SufTreeNode:
+    def build_from_iterable(self, iterable: IterableWithLen) -> SufTreeNode:
         """
         Build the tree from iterable
         """
@@ -43,20 +41,21 @@ class BasicSuffixTree:
         for suffix, start in self.suffixes(iterable):
             cur: SufTreeNode = root
             idx = 0
-            while idx < len(suffix):
-                val = cur[suffix[idx]]
+            while idx < len(suffix or ""):
+                val = cur[suffix[idx] if suffix is not None else 0]
                 if val is not None:
                     cur = val
                 else:
-                    cur.add_child(SufTreeNode(suffix[idx], start + idx))
-                    cur = cur[suffix[idx]]
+                    if suffix is not None:
+                        cur.add_child(SufTreeNode(suffix[idx], start + idx))
+                        cur = cur[suffix[idx]]
 
                 if start + idx not in cur.indices:
                     cur.indices.append(start + idx)
                 idx += 1
         return root
 
-    def indices(self, string: IterableWithLen[NodeValue]) -> list[int]:
+    def indices(self, string: IterableWithLen):
         """
         Get indices for iterable
         """
@@ -72,11 +71,12 @@ class BasicSuffixTree:
         return [idx - len(string) + 1 for idx in cur.indices]
 
     @staticmethod
-    def suffixes(iterable: IterableWithLen[NodeValue]) -> list:
+    def suffixes(iterable: IterableWithLen):
         """
         Get all the suffixes from the iterable
         """
-        return [(iterable[start:], start) for start in range(len(iterable))]
+        for start in range(len(iterable)):
+            yield iterable[start:], start
 
     @property
     def leaves(self) -> int:
