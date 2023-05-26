@@ -92,7 +92,11 @@ class PrefixTree:
                     break
             else:
                 return None
-        letter = choice(current_node.letters)
+        letter = (
+            choice(current_node.letters)
+            if current_node and current_node.letters
+            else Letter("", None, True)
+        )
         if letter.is_end is True:
             res = letter.value
         else:
