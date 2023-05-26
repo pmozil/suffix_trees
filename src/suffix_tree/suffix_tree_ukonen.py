@@ -15,16 +15,25 @@ class UkkonenTreeNode:
         Init for suffix tree node
         """
         self.val = val
+        self.is_leaf = True
         self.children = children
         self.indices = indices
+        self.remainder = ""
+
+    def __eq__(self, other) -> bool:
+        """
+        Eq for the node
+        """
+        return self.val == other.val
 
     def __repr__(self) -> str:
         """
         Repr for node
         """
-        return (
-            f'UkkonenTreeNode(val = "{self.val}", children = {self.children})'
-        )
+        return f"""UkkonenTreeNode(
+                val = "{self.val}",
+                children = {self.children},
+                indices={self.indices})\n"""
 
 
 class UkkonenTree:
@@ -37,59 +46,88 @@ class UkkonenTree:
         Init for the basic suffix tree
         """
         self.nodes = [UkkonenTreeNode()]
+        self.active_point = None
         for idx in range(len(text)):
-            self.add_suffix(text[idx:], idx)
+            self.add_suffix(text[idx], idx)
 
-    def add_suffix(self, suffix: str, orig_idx: int):
+    def add_suffix(self, char: str, orig_idx: int):
         """
         Add a suffix to the tree
         """
-        chr_idx = 0
-        # find the last fitting child
-        node = 0
-        while chr_idx < len(suffix):
-            child_idx = 0
-            while True:
-                children = self.nodes[node].children
-                if child_idx == len(children):
-                    new_node = len(self.nodes)
-                    self.nodes.append(
-                        UkkonenTreeNode(
-                            suffix[chr_idx:], [], [chr_idx + orig_idx]
-                        )
-                    )
-                    self.nodes[node].children.append(new_node)
-                    return
-                new_node = children[child_idx]
+        if self.active_point is not None:
+            node = self.active_point
+            print("Match: ", node.val)
 
-                print(new_node, len(self.nodes), self.nodes[new_node])
+            if node.remainder.startswith(char) and char:
+                node.val += char
+                node.remainder = node.remainder[1:]
+                node.indices.append(orig_idx)
 
-                if (
-                    not self.nodes[new_node].val
-                    or self.nodes[new_node].val[0] == suffix[chr_idx]
-                ):
-                    break
-                child_idx += 1
-            substitute = self.nodes[new_node].val
-            j = 0
-            while j < len(substitute):
-                if suffix[chr_idx + j] != substitute:
-                    prev = new_node
-                    new_node = len(self.nodes)
-                    self.nodes.append(
-                        UkkonenTreeNode(
-                            substitute[:j], [], [orig_idx + chr_idx]
-                        )
-                    )
-                    self.nodes[prev].val = substitute[j:]
-                    self.nodes[prev].indices = [
-                        node + j for node in self.nodes[prev].indices
-                    ]
-                    self.nodes[node].children[child_idx] = new_node
-                    break
-                j += 1
-            chr_idx += j
-            node = new_node
+            elif node.remainder:
+                suffix = node.remainder
+                node.remainder = ""
+                node.indices.append(orig_idx)
+
+                node.is_leaf = False
+
+                if not suffix.endswith(char):
+                    suffix += char
+
+                node.children = []
+                old_suffix_node = UkkonenTreeNode(
+                    suffix,
+                    node.children,
+                    node.indices + [orig_idx + len(node.val)],
+                )
+
+                for idx, i in enumerate(self.nodes):
+                    if old_suffix_node == i:
+                        i.indices.extend(old_suffix_node.indices)
+                        i.children.extend(old_suffix_node.children)
+                        node.children.append(idx)
+                        break
+                else:
+                    node.children.append(len(self.nodes))
+                    self.nodes[0].children.append(len(self.nodes))
+                    self.nodes.append(old_suffix_node)
+
+                new_suffix_node = UkkonenTreeNode(
+                    char, [], [orig_idx + len(node.val)]
+                )
+
+                for idx, i in enumerate(self.nodes):
+                    if new_suffix_node == i:
+                        i.indices.extend(new_suffix_node.indices)
+                        i.children.extend(new_suffix_node.children)
+                        node.children.append(idx)
+                        break
+                else:
+                    node.children.append(len(self.nodes))
+                    self.nodes[0].children.append(len(self.nodes))
+                    self.nodes.append(new_suffix_node)
+                # Set only the two new suffixes to be the nodes's children,
+                # as not to make any loops
+                self.active_point = None
+                return
+
+        branch_matched = False
+        for node in self.nodes:
+            if node.is_leaf and node.val:
+                node.val += char
+
+            if node.val.startswith(char) and char:
+                branch_matched = True
+                self.active_point = node
+                node.val = char
+                node.remainder = node.val[1:]
+                node.indices.append(orig_idx)
+
+            node.indices = list(set(node.indices))
+            node.children = list(set(node.children))
+
+        if not branch_matched:
+            self.nodes[0].children.append(len(self.nodes))
+            self.nodes.append(UkkonenTreeNode(char, [], [orig_idx]))
 
     def __repr__(self) -> str:
         """
