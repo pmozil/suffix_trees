@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QEvent, QPoint, Qt  # type: ignore
+from PyQt6.QtCore import QPoint, Qt  # type: ignore
 from PyQt6.QtGui import QTextCursor  # type: ignore
 from PyQt6.QtWidgets import QMenu  # type: ignore
 from PyQt6.QtWidgets import QVBoxLayout  # type: ignore
@@ -85,7 +85,7 @@ class CustomTextEdit(QTextEdit):
             return
         self.context_menu = PopupMenu(self)
         for word in completion:
-            action = self.context_menu.addAction(word)
+            action = self.context_menu.addAction(word)  # type: ignore
             if isinstance(word, str):
                 to_insert = word[len(current_word) :]
             else:
@@ -94,16 +94,11 @@ class CustomTextEdit(QTextEdit):
                 lambda _, text=to_insert: self.insertPlainText(text)
             )
         self.context_menu.exec(
-            self.mapToGlobal(self.cursorRect().topLeft() + QPoint(0, 20))
+            self.mapToGlobal(
+                self.cursorRect().topLeft() + QPoint(0, 20)  # pyright: ignore
+            )
         )
         self.setFocus()
-
-    def focusOutEvent(self, event):
-        if event.type() == QEvent.Type.FocusOut:
-            # Perform custom behavior when the widget loses focus
-            self.setFocus()
-        else:
-            super().focusOutEvent(event)
 
 
 class Window(QMainWindow):
