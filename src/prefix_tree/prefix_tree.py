@@ -1,7 +1,7 @@
 """
 Prefix Tree
 """
-from random import choice
+
 class PrefixTree:
     """
     Prefix Tree
@@ -87,6 +87,15 @@ class PrefixTree:
         """
         Return a word with the prefix
         """
+        def search_word(node, prefix):
+            ret_lst = []
+            for letter in node.letters:
+                if letter.is_end:
+                    ret_lst.append(prefix + letter.value)
+                if letter.child:
+                    ret_lst += search_word(letter.child, prefix + letter.value)
+            return ret_lst
+
         current_node = self._head
         for letter in prefix:
             for let in current_node.letters:
@@ -95,18 +104,7 @@ class PrefixTree:
                     break
             else:
                 return None
-        letter = choice(current_node.letters)
-        if letter.is_end is True:
-            res = letter.value
-        else:
-            res = ""
-        while letter.is_end is False and letter.child is not None:
-            letter = choice(current_node.letters)
-            res += letter.value
-            current_node = letter.child
-        if res == '':
-            return None
-        return prefix + res
+        return search_word(current_node, prefix)
 
 class Node:
     """
@@ -133,13 +131,5 @@ class Letter:
 if __name__ == "__main__":
     tree = PrefixTree()
     tree.create_tree(tree.read_file("base.lst"))
-    print(tree.autocomplete("закли"))
-    print(tree.autocomplete("закли"))
-    print(tree.autocomplete("закли"))
-    print(tree.autocomplete("закли"))
-    print(tree.autocomplete("закли"))
-    print(tree.autocomplete("закли"))
-    print(tree.autocomplete("заклин"))
-    print(tree.autocomplete("заклин"))
-    print(tree.autocomplete("заклин"))
+    print(tree.autocomplete("коде"))
     print(tree.autocomplete("заклин"))
