@@ -4,7 +4,7 @@ The suffix tree is used to search for substring in linear time
 """
 
 
-from ..b_tree import BTreeNode, IterableWithLen, NodeValue
+from b_tree.b_tree import BTreeNode, IterableWithLen, NodeValue
 
 
 class SufTreeNode(BTreeNode):
@@ -33,9 +33,7 @@ class BasicSuffixTree:
         if text is not None:
             self.root = self.build_from_iterable(text)
 
-    def build_from_iterable(
-        self, iterable: IterableWithLen[NodeValue]
-    ) -> SufTreeNode:
+    def build_from_iterable(self, iterable: IterableWithLen[NodeValue]) -> SufTreeNode:
         """
         Build the tree from iterable
         """

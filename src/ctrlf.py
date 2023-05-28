@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QPoint, Qt  # type: ignore
-from PyQt6.QtGui import QTextCursor  # type: ignore
+from PyQt6.QtGui import QTextCursor, QTextCharFormat, QColor  # type: ignore
 from PyQt6.QtWidgets import QMenu  # type: ignore
-from PyQt6.QtWidgets import QVBoxLayout  # type: ignore
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout  # type: ignore
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -9,9 +9,12 @@ from PyQt6.QtWidgets import (
     QStyleOptionMenuItem,
     QTextEdit,
     QWidget,
+    QPushButton,
+    QLineEdit,
 )
 
 from prefix_tree.prefix_tree import PrefixTree
+from suffix_tree.suffix_tree_basic import BasicSuffixTree as SuffixTree
 
 
 class MenuProxyStyle(QProxyStyle):
@@ -58,12 +61,62 @@ class CustomTextEdit(QTextEdit):
         self.words_dict = {}
         self.previous_word = ""
         self.auto_complete_tree = PrefixTree()
-
+        self.suffix_tree = SuffixTree()
+        self.setPlaceholderText("Text edit")
         self.cursorPositionChanged.connect(self.cursor_moved)
+        self.indices = []
+
+    def highlight_text(self, indices, color):
+        # Get the document
+        self.indices = indices
+        document = self.document()
+
+        # Create a QTextCharFormat to apply the background color
+        format = QTextCharFormat()
+        format.setBackground(color)
+
+        for start, end in indices:
+            # Create a QTextCursor and set its position to the start index
+            cursor = QTextCursor(document)
+            cursor.setPosition(start)
+
+            # Move the cursor to the end index
+            cursor.movePosition(
+                QTextCursor.MoveOperation.Right,
+                QTextCursor.MoveMode.KeepAnchor,
+                end - start,
+            )
+
+            # Apply the format to the selected characters
+            cursor.mergeCharFormat(format)
+
+    def unhighlight_text(self):
+        # Get the document
+        document = self.document()
+
+        # Create a QTextCharFormat to apply the background color
+        format = QTextCharFormat()
+        format.setBackground(QColor("transparent"))
+
+        for start, end in self.indices:
+            # Create a QTextCursor and set its position to the start index
+            cursor = QTextCursor(document)
+            cursor.setPosition(start)
+
+            # Move the cursor to the end index
+            cursor.movePosition(
+                QTextCursor.MoveOperation.Right,
+                QTextCursor.MoveMode.KeepAnchor,
+                end - start,
+            )
+
+            # Apply the format to the selected characters
+            cursor.mergeCharFormat(format)
 
     def cursor_moved(self):
         cursor = self.textCursor()
         current_text = self.toPlainText()
+        self.suffix_tree = SuffixTree(current_text)
         current_text_words = current_text.replace("\n", " ").split(" ")
         cursor.select(QTextCursor.SelectionType.WordUnderCursor)
         cursor_word = cursor.selectedText()
@@ -107,6 +160,28 @@ class CustomTextEdit(QTextEdit):
         self.setFocus()
 
 
+class TextSearch(QWidget):
+    def __init__(self, parent, customText):
+        QWidget.__init__(self, parent=parent)
+        self.customText = customText
+        lay = QVBoxLayout(self)
+        self.text = QLineEdit(self)
+        self.button = QPushButton(self)
+        self.text.setPlaceholderText("Serch for words")
+        self.button.setText("Next Word")
+        lay.addWidget(self.text)
+        lay.addWidget(self.button)
+        self.button.clicked.connect(self.search_for_words)
+
+    def search_for_words(self):
+        text = self.text.text()
+        indices = self.customText.suffix_tree.indices(text)
+        indices = [(i, i + len(text)) for i in indices]
+        self.customText.unhighlight_text()
+        if indices:
+            self.customText.highlight_text(indices, QColor("yellow"))
+
+
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -116,7 +191,11 @@ class Window(QMainWindow):
         self.textBox = CustomTextEdit()
         self.textBox.setPlainText("")
 
+        self.textSearch = TextSearch(self, self.textBox)
+        self.textSearch.setFixedHeight(150)
+
         mainLayout = QVBoxLayout()
+        mainLayout.addWidget(self.textSearch)
         mainLayout.addWidget(self.textBox)
 
         centralWidget = QWidget()
