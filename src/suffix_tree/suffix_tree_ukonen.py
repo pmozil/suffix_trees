@@ -97,9 +97,7 @@ class UkkonenTree:
                 self.active_node is not None
                 and self.active_node.children.get(char) is None
             ):
-                self.active_node.children[char] = self.new_node(
-                    pos, self.leaf_end
-                )
+                self.active_node.children[char] = self.new_node(pos, self.leaf_end)
                 if self.last_new_node is not None:
                     self.last_new_node.link = self.active_node
                     self.last_new_node = None
@@ -108,14 +106,8 @@ class UkkonenTree:
                 if self.walk_down(next) or next is None:
                     continue
 
-                if (
-                    self.text[next.start + self.active_length]
-                    == self.text[pos]
-                ):
-                    if (
-                        self.last_new_node is not None
-                        and self.active_node != self.root
-                    ):
+                if self.text[next.start + self.active_length] == self.text[pos]:
+                    if self.last_new_node is not None and self.active_node != self.root:
                         self.last_new_node.link = self.active_node
                         self.last_new_node = None
                     self.active_length += 1
@@ -136,9 +128,7 @@ class UkkonenTree:
             if self.active_node == self.root and self.active_length > 0:
                 self.active_length -= 1
                 self.active_edge = pos - self.remainning_suffixes + 1
-            elif (
-                self.active_node != self.root and self.active_node is not None
-            ):
+            elif self.active_node != self.root and self.active_node is not None:
                 self.active_node = self.active_node.link
 
     def build_tree(self):
