@@ -150,6 +150,7 @@ struct Node {
 
 The easiest way to build a compressed prefix trie would be to just compress a prefix trie.
 It would be done as such:
+
 ```rust
 fn compress_prefix_tree(tree: PrefixTree) {
     uncompressed_nodes = [
@@ -203,7 +204,6 @@ The proper node would look like this:
 **A proper suffix tree uses indices, and does not contain the text itself, so as to take up
 less space!**
 
-
 ```cpp
 struct Node {
     Node *suffix_link,
@@ -254,5 +254,11 @@ fn add_suffix(Node *root, int pos) {
 }
 ```
 
-
 **In python, however, this does not work, since no pointers**
+
+## UI
+
+### Full text search engine
+
+We use a prefix tree to search the required words in the text,
+and a suffix tree, which rebuild preffix tree for certain word search.
