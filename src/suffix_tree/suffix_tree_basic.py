@@ -3,7 +3,7 @@ The suffix tree module.
 The suffix tree is used to search for substring in linear time
 """
 
-
+from typing import Iterator
 from ..b_tree import BTreeNode, IterableWithLen, NodeValue
 
 
@@ -72,11 +72,12 @@ class BasicSuffixTree:
         return [idx - len(string) + 1 for idx in cur.indices]
 
     @staticmethod
-    def suffixes(iterable: IterableWithLen[NodeValue]) -> list:
+    def suffixes(iterable: IterableWithLen[NodeValue]) -> Iterator[NodeValue]:
         """
         Get all the suffixes from the iterable
         """
-        return [(iterable[start:], start) for start in range(len(iterable))]
+        for start in range(len(iterable)):
+            yield (iterable[start:], start)
 
     @property
     def leaves(self) -> int:
