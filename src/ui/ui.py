@@ -11,21 +11,23 @@ from suffix_tree.suffix_tree_basic import BasicSuffixTree as SuffixTree
 
 
 class MenuProxyStyle(QProxyStyle):
-    def drawControl(self, element, opt, p, w):
-        if element == 14:
-            menuitem = QStyleOptionMenuItem(opt)
+    def drawControl(self, element, options, painter, widget):
+        if isinstance(widget, QMenu) and element == 14:
+            menuitem = QStyleOptionMenuItem(options)
             text = menuitem.text
             menuitem.text = ""
-            QProxyStyle.drawControl(self, element, menuitem, p, w)
+            QProxyStyle.drawControl(self, element, menuitem, painter, widget)
             if text == "":
                 return
             padding = 8
             text_flags = Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft
-            p.drawText(
+            painter.drawText(
                 menuitem.rect.adjusted(padding, 0, -padding, 0),
                 text_flags,
                 text,
             )
+            return
+        super().drawControl(element, options, painter, widget)
 
 
 class PopupMenu(QMenu):
