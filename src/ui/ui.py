@@ -166,7 +166,7 @@ class TextSearch(QWidget):
         lay = QVBoxLayout(self)
         self.text = QLineEdit(self)
         self.button = QPushButton(self)
-        self.text.setPlaceholderText("Serch for words")
+        self.text.setPlaceholderText("Search for words")
         self.button.setText("Next Word")
         lay.addWidget(self.text)
         lay.addWidget(self.button)
