@@ -1,3 +1,5 @@
+from random import SystemRandom
+
 from PyQt6.QtCore import QPoint, Qt  # type: ignore
 from PyQt6.QtGui import QColor, QTextCharFormat, QTextCursor  # type: ignore
 from PyQt6.QtWidgets import QMenu  # type: ignore
@@ -8,6 +10,8 @@ from PyQt6.QtWidgets import (QApplication, QLineEdit, QMainWindow, QProxyStyle,
 
 from prefix_tree.prefix_tree import PrefixTree
 from suffix_tree.suffix_tree_basic import BasicSuffixTree as SuffixTree
+
+choice = SystemRandom().choice
 
 
 class MenuProxyStyle(QProxyStyle):
@@ -174,7 +178,10 @@ class TextSearch(QWidget):
         indices = [(i, i + len(text)) for i in indices]
         self.customText.unhighlight_text()
         if indices:
-            self.customText.highlight_text(indices, QColor("yellow"))
+            color = choice(
+                ["yellow", "green", "blue", "red", "orange", "purple", "pink"]
+            )
+            self.customText.highlight_text(indices, QColor(color))
 
 
 class Window(QMainWindow):
