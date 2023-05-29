@@ -1,7 +1,5 @@
 class Node:
-    """
-    The node class
-    """
+    """The node class."""
 
     def __init__(self, sub="", children=None):
         self.sub = sub
