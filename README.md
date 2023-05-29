@@ -47,6 +47,8 @@ Just run the `src/ui/ui.py` file:
 python src/ui/ui.py
 ```
 
+![ui.gif](ui.gif)
+
 Now type some text in the bottom field.
 When a word with the same begginning is found, it will be displayed in a popup as a suggestion.
 If you click on the suggestion or press enter while focused(for example, using tab), the suggestion will be inserted into the text field.
