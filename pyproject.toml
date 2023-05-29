@@ -5,7 +5,10 @@ description = ""
 authors = [
     {name = "Petro Mozil", email = "mozil.petryk@gmail.com"},
 ]
-dependencies = []
+dependencies = [
+    "pyqt6>=6.5.0",
+    "typing-extensions>=4.6.2",
+]
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "GPL v3.0"}
