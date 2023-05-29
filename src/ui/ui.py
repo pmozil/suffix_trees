@@ -187,7 +187,7 @@ class TextSearch(QWidget):
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Window Title")
+        self.setWindowTitle("Autocomplete & Search")
         self.setGeometry(640, 480, 600, 480)
 
         self.textBox = CustomTextEdit()
