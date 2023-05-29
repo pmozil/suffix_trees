@@ -1,17 +1,10 @@
 from PyQt6.QtCore import QPoint, Qt  # type: ignore
-from PyQt6.QtGui import QTextCursor, QTextCharFormat, QColor  # type: ignore
+from PyQt6.QtGui import QColor, QTextCharFormat, QTextCursor  # type: ignore
 from PyQt6.QtWidgets import QMenu  # type: ignore
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout  # type: ignore
-from PyQt6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QProxyStyle,
-    QStyleOptionMenuItem,
-    QTextEdit,
-    QWidget,
-    QPushButton,
-    QLineEdit,
-)
+from PyQt6.QtWidgets import QVBoxLayout  # type: ignore
+from PyQt6.QtWidgets import (QApplication, QLineEdit, QMainWindow, QProxyStyle,
+                             QPushButton, QStyleOptionMenuItem, QTextEdit,
+                             QWidget)
 
 from prefix_tree.prefix_tree import PrefixTree
 from suffix_tree.suffix_tree_basic import BasicSuffixTree as SuffixTree
