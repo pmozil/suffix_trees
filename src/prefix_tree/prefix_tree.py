@@ -1,4 +1,5 @@
 """Prefix Tree."""
+from typing import Iterable
 
 
 class PrefixTree:
