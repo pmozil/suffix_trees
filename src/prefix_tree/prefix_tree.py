@@ -81,6 +81,8 @@ class PrefixTree:
 
     def autocomplete(self, prefix: str):
         """Return a word with the prefix."""
+        if prefix == "":
+            return None
 
         def search_word(node, prefix):
             ret_lst = []
@@ -99,6 +101,8 @@ class PrefixTree:
                     break
             else:
                 return None
+        if current_node is None:
+            return None
         return search_word(current_node, prefix)
 
 

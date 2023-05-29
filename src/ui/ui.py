@@ -138,7 +138,7 @@ class CustomTextEdit(QTextEdit):
 
         self.auto_complete_tree = PrefixTree()
         self.auto_complete_tree.create_tree((word for word in self.words_dict))
-        completion = [self.auto_complete_tree.autocomplete(current_word)] or []
+        completion = self.auto_complete_tree.autocomplete(current_word) or []
         if not completion or not all(isinstance(word, str) for word in completion):
             return
         self.context_menu = PopupMenu(self)
