@@ -5,7 +5,7 @@ The suffix tree is used to search for substring in linear time
 
 from typing import Iterator
 
-from ..b_tree import BTreeNode, IterableWithLen, NodeValue
+from b_tree.b_tree import BTreeNode, IterableWithLen, NodeValue
 
 
 class SufTreeNode(BTreeNode):
