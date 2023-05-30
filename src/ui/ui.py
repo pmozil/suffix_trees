@@ -179,7 +179,7 @@ class TextSearch(QWidget):
         self.customText.unhighlight_text()
         if indices:
             color = choice(
-                ["yellow", "green", "blue", "red", "orange", "purple", "pink"]
+                ["red", "orange", "yellow", "green", "blue", "purple"]
             )
             self.customText.highlight_text(indices, QColor(color))
 
