@@ -14,7 +14,7 @@ class UkkonenTreeNode:
 
     def __init__(self):
         self.start = -1
-        self.end = -1
+        self.end = []
         self.idx = -1
         self.link: "UkkonenTreeNode | None" = None
         self.children = {}
@@ -44,36 +44,24 @@ class UkkonenTree:
         self.active_length = 0
         self.remainning_suffixes = 0
         self._leaf_end = -1
-        self.root_end = -1
-        self.spliit_end = -1
+        self.root_end = []
+        self.split_end = -1
         self.size = -1
-        self.leaves = []
         self.build_tree()
 
-    @property
-    def leaf_end(self) -> int:
-        return self._leaf_end
-
-    @leaf_end.setter
-    def leaf_end(self, val):
-        self._leaf_end = val
-        for node in self.leaves:
-            node.end = val
-
-    def new_node(self, start: int, end: int) -> UkkonenTreeNode:
+    def new_node(self, start: int, end: list[int]) -> UkkonenTreeNode:
         node = UkkonenTreeNode()
         node.link = self.root
         node.start = start
         node.end = end
         node.idx = -1
-        self.leaves.append(node)
-        return self.leaves[-1]
+        return node
 
     def edge_length(self, node):
         if node == self.root or node is None:
             return 0
 
-        return node.end - node.start + 1
+        return node.end[0] - node.start + 1
 
     def walk_down(self, node):
         if self.active_length >= self.edge_length(node):
@@ -84,10 +72,11 @@ class UkkonenTree:
         return False
 
     def extend_suffix_tree(self, pos: int):
-        self.leaf_end = pos
+        self.root_end[0] = pos
         self.remainning_suffixes += 1
         self.last_new_node = None
         while self.remainning_suffixes > 0:
+            
             if self.active_length > 0:
                 self.active_edge = pos
 
@@ -97,13 +86,14 @@ class UkkonenTree:
                 self.active_node is not None
                 and self.active_node.children.get(char) is None
             ):
-                self.active_node.children[char] = self.new_node(pos, self.leaf_end)
+                self.active_node.children[char] = self.new_node(pos, self.root_end)
                 if self.last_new_node is not None:
                     self.last_new_node.link = self.active_node
                     self.last_new_node = None
+
             elif self.active_node is not None:
                 next = self.active_node.children.get(char)
-                if self.walk_down(next) or next is None:
+                if self.walk_down(next):
                     continue
 
                 if self.text[next.start + self.active_length] == self.text[pos]:
@@ -114,8 +104,8 @@ class UkkonenTree:
                     break
 
                 tmp = next.start + self.active_length - 1
-                self.spliit_end = tmp
-                split = self.new_node(next.start, self.leaf_end)
+                self.split_end = tmp
+                split = self.new_node(next.start, self.root_end)
                 next.start += self.active_length
                 split.children[self.text[next.start]] = next
 
@@ -134,7 +124,7 @@ class UkkonenTree:
     def build_tree(self):
         self.size = len(self.text)
         tmp = -1
-        self.root_end = tmp
+        self.root_end = [tmp]
         self.root = self.new_node(-1, self.root_end)
         self.active_node = self.root
         for i in range(self.size):
@@ -143,3 +133,8 @@ class UkkonenTree:
     def indices(self, substr: str):
         word = substr
         return 0
+
+import timeit
+with open(__file__, 'r') as f:
+    a = timeit.timeit(lambda: UkkonenTree(f.read()), number=10000)
+    print(a)
